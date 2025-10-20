@@ -39,10 +39,18 @@ export async function POST(req: Request) {
 
     await dbConnect();
 
+    const User = (await import('@/models/User')).default;
+    const currentUser = await User.findById(decoded.userId);
+    
+    if (!currentUser) {
+      return NextResponse.json({ error: 'User not found' }, { status: 404 });
+    }
+
     const project = await Project.create({
       name,
       description,
       owner: decoded.userId,
+      company: currentUser.company,
       members: [decoded.userId],
     });
 

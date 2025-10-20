@@ -38,11 +38,39 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    jwt.verify(token, process.env.JWT_SECRET!);
+    const decoded = jwt.verify(token, process.env.JWT_SECRET!) as { userId: string };
 
     const { title, description, project, assignedTo, priority, deadline } = await req.json();
 
     await dbConnect();
+
+    const User = (await import('@/models/User')).default;
+    const Project = (await import('@/models/Project')).default;
+
+    // Verify the assigned user is from the same company
+    if (assignedTo) {
+      const currentUser = await User.findById(decoded.userId);
+      const assignedUser = await User.findById(assignedTo);
+      const projectDoc = await Project.findById(project);
+
+      if (!currentUser || !assignedUser || !projectDoc) {
+        return NextResponse.json({ error: 'Invalid data' }, { status: 400 });
+      }
+
+      if (assignedUser.company.toString() !== currentUser.company.toString()) {
+        return NextResponse.json(
+          { error: 'Cannot assign tasks to users from different companies' },
+          { status: 403 }
+        );
+      }
+
+      if (projectDoc.company.toString() !== currentUser.company.toString()) {
+        return NextResponse.json(
+          { error: 'Cannot create tasks for projects from different companies' },
+          { status: 403 }
+        );
+      }
+    }
 
     const task = await Task.create({
       title,

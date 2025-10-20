@@ -10,11 +10,18 @@ export async function GET(req: Request) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    jwt.verify(token, process.env.JWT_SECRET!);
+    const decoded: any = jwt.verify(token, process.env.JWT_SECRET!);
 
     await dbConnect();
 
-    const users = await User.find({}, 'name email');
+    // Get current user to find their company
+    const currentUser = await User.findById(decoded.userId);
+    if (!currentUser) {
+      return NextResponse.json({ error: 'User not found' }, { status: 404 });
+    }
+
+    // Only return users from the same company
+    const users = await User.find({ company: currentUser.company }, 'name email company');
 
     return NextResponse.json(users);
   } catch (error) {

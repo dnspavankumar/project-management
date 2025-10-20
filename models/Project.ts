@@ -13,6 +13,11 @@ const ProjectSchema = new Schema({
     ref: 'User',
     required: true,
   },
+  company: {
+    type: Schema.Types.ObjectId,
+    ref: 'Company',
+    required: true,
+  },
   members: [{
     type: Schema.Types.ObjectId,
     ref: 'User',

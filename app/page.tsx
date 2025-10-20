@@ -152,32 +152,97 @@ export default function Home() {
     router.push('/login');
   };
 
+  const todoTasks = tasks.filter((task: any) => task.status === 'todo').length;
+  const inProgressTasks = tasks.filter((task: any) => task.status === 'in-progress').length;
+  const completedTasks = tasks.filter((task: any) => task.status === 'completed').length;
+
   return (
-    <div className="min-h-screen bg-gray-50">
-      <nav className="bg-white shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
-          <h1 className="text-2xl font-bold text-gray-900">Project Manager</h1>
-          <button
-            onClick={logout}
-            className="px-4 py-2 text-sm text-gray-700 hover:text-gray-900"
-          >
-            Logout
-          </button>
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
+      {/* Modern Header */}
+      <nav className="bg-white border-b border-gray-200">
+        <div className="max-w-7xl mx-auto px-6 py-4">
+          <div className="flex justify-between items-center">
+            <div className="flex items-center gap-4">
+              <div className="w-10 h-10 bg-gradient-to-br from-indigo-600 to-purple-600 rounded-lg flex items-center justify-center">
+                <span className="text-white font-bold text-xl">PM</span>
+              </div>
+              <h1 className="text-2xl font-bold text-gray-900">Project Manager</h1>
+            </div>
+            <div className="flex items-center gap-4">
+              <button
+                onClick={logout}
+                className="px-5 py-2.5 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors shadow-sm hover:shadow-md font-medium"
+              >
+                Logout
+              </button>
+            </div>
+          </div>
         </div>
       </nav>
 
-      <main className="max-w-7xl mx-auto px-4 py-8">
+      <main className="max-w-7xl mx-auto px-6 py-8">
+        {/* Stats Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+          <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-gray-600 mb-1">Total Projects</p>
+                <p className="text-3xl font-bold text-gray-900">{projects.length}</p>
+              </div>
+              <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
+                <span className="text-2xl">📁</span>
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-gray-600 mb-1">To Do</p>
+                <p className="text-3xl font-bold text-gray-900">{todoTasks}</p>
+              </div>
+              <div className="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center">
+                <span className="text-2xl">📋</span>
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-gray-600 mb-1">In Progress</p>
+                <p className="text-3xl font-bold text-yellow-600">{inProgressTasks}</p>
+              </div>
+              <div className="w-12 h-12 bg-yellow-100 rounded-lg flex items-center justify-center">
+                <span className="text-2xl">⚡</span>
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-gray-600 mb-1">Completed</p>
+                <p className="text-3xl font-bold text-green-600">{completedTasks}</p>
+              </div>
+              <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
+                <span className="text-2xl">✅</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        {/* Projects Section */}
         <div className="mb-8">
-          <div className="flex justify-between items-center mb-4">
-            <h2 className="text-xl font-semibold text-gray-900">Projects</h2>
+          <div className="flex justify-between items-center mb-6">
+            <h2 className="text-2xl font-bold text-gray-900">Projects</h2>
             <button
               onClick={() => setShowProjectModal(true)}
-              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+              className="px-6 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-lg hover:from-indigo-700 hover:to-purple-700 transition-all shadow-md hover:shadow-lg transform hover:scale-105"
             >
-              New Project
+              + New Project
             </button>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {projects.map((project: any) => (
               <div
                 key={project._id}
@@ -186,71 +251,116 @@ export default function Home() {
                   setProjectMembers(project.members || []);
                   fetchTasks(project._id);
                 }}
-                className={`p-4 bg-white rounded-lg shadow cursor-pointer hover:shadow-md transition ${
-                  selectedProject === project._id ? 'ring-2 ring-blue-500' : ''
+                className={`p-6 bg-white rounded-xl shadow-sm cursor-pointer hover:shadow-lg transition-all border-2 ${
+                  selectedProject === project._id 
+                    ? 'border-indigo-500 shadow-lg' 
+                    : 'border-transparent hover:border-gray-200'
                 }`}
               >
-                <h3 className="font-semibold text-lg text-gray-900">{project.name}</h3>
-                <p className="text-gray-600 text-sm mt-1">{project.description}</p>
-                <div className="flex items-center justify-between mt-2">
-                  <span className="inline-block px-2 py-1 text-xs bg-green-100 text-green-800 rounded">
+                <div className="flex items-start justify-between mb-3">
+                  <h3 className="font-bold text-lg text-gray-900">{project.name}</h3>
+                  <span className={`px-3 py-1 text-xs font-medium rounded-full ${
+                    project.status === 'active' 
+                      ? 'bg-green-100 text-green-700' 
+                      : 'bg-gray-100 text-gray-700'
+                  }`}>
                     {project.status}
                   </span>
-                  <span className="text-xs text-gray-500">
-                    👥 {project.members?.length || 0} members
-                  </span>
+                </div>
+                <p className="text-gray-600 text-sm mb-4 line-clamp-2">{project.description}</p>
+                <div className="flex items-center gap-4 text-sm text-gray-500">
+                  <div className="flex items-center gap-1">
+                    <span>👥</span>
+                    <span>{project.members?.length || 0}</span>
+                  </div>
+                  <div className="flex items-center gap-1">
+                    <span>📋</span>
+                    <span>{tasks.filter((t: any) => t.project._id === project._id).length}</span>
+                  </div>
                 </div>
               </div>
             ))}
           </div>
         </div>
 
+        {/* Tasks Section */}
         <div>
-          <div className="flex justify-between items-center mb-4">
-            <h2 className="text-xl font-semibold text-gray-900">Tasks</h2>
-            <div className="flex gap-2">
+          <div className="flex justify-between items-center mb-6">
+            <h2 className="text-2xl font-bold text-gray-900">Tasks Board</h2>
+            <div className="flex gap-3">
               <button
                 onClick={() => setShowMemberModal(true)}
                 disabled={!selectedProject}
-                className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 disabled:bg-gray-400"
+                className="px-5 py-2.5 bg-purple-600 text-white rounded-lg hover:bg-purple-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-all shadow-sm hover:shadow-md"
               >
-                Add Member
+                + Add Member
               </button>
               <button
                 onClick={() => setShowTaskModal(true)}
                 disabled={!selectedProject}
-                className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:bg-gray-400"
+                className="px-5 py-2.5 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-all shadow-sm hover:shadow-md"
               >
-                New Task
+                + New Task
               </button>
             </div>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            {['todo', 'in-progress', 'completed'].map((status) => (
-              <div key={status} className="bg-gray-100 p-4 rounded-lg">
-                <h3 className="font-semibold mb-3 capitalize text-gray-900">{status.replace('-', ' ')}</h3>
-                <div className="space-y-3">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {[
+              { status: 'todo', label: 'To Do', color: 'gray', emoji: '📋' },
+              { status: 'in-progress', label: 'In Progress', color: 'yellow', emoji: '⚡' },
+              { status: 'completed', label: 'Completed', color: 'green', emoji: '✅' }
+            ].map(({ status, label, color, emoji }) => (
+              <div key={status} className="bg-white rounded-xl shadow-sm border border-gray-200 p-5">
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="font-bold text-gray-900 flex items-center gap-2">
+                    <span>{emoji}</span>
+                    <span>{label}</span>
+                  </h3>
+                  <span className={`px-2 py-1 text-xs font-medium rounded-full bg-${color}-100 text-${color}-700`}>
+                    {tasks.filter((task: any) => task.status === status).length}
+                  </span>
+                </div>
+                <div className="space-y-3 max-h-[600px] overflow-y-auto">
                   {tasks
                     .filter((task: any) => task.status === status)
                     .map((task: any) => (
-                      <div key={task._id} className="bg-white p-3 rounded shadow-sm">
-                        <h4 className="font-medium text-gray-900">{task.title}</h4>
-                        <p className="text-sm text-gray-600 mt-1">{task.description}</p>
-                        {task.assignedTo && (
-                          <p className="text-xs text-blue-600 mt-1">
-                            👤 {task.assignedTo.name}
-                          </p>
-                        )}
-                        {task.deadline && (
-                          <p className="text-xs text-gray-500 mt-1">
-                            📅 Due: {new Date(task.deadline).toLocaleDateString()}
-                          </p>
-                        )}
-                        <div className="flex gap-2 mt-2">
+                      <div key={task._id} className="bg-gray-50 p-4 rounded-lg border border-gray-200 hover:border-gray-300 transition-all">
+                        <div className="flex items-start justify-between mb-2">
+                          <h4 className="font-semibold text-gray-900">{task.title}</h4>
+                          <span className={`px-2 py-0.5 text-xs font-medium rounded ${
+                            task.priority === 'high' 
+                              ? 'bg-red-100 text-red-700' 
+                              : task.priority === 'medium'
+                              ? 'bg-orange-100 text-orange-700'
+                              : 'bg-blue-100 text-blue-700'
+                          }`}>
+                            {task.priority}
+                          </span>
+                        </div>
+                        <p className="text-sm text-gray-600 mb-3">{task.description}</p>
+                        <div className="space-y-2 mb-3">
+                          {task.assignedTo && (
+                            <div className="flex items-center gap-2 text-xs text-gray-700">
+                              <div className="w-6 h-6 bg-gradient-to-br from-purple-400 to-pink-400 rounded-full flex items-center justify-center">
+                                <span className="text-white font-semibold text-xs">
+                                  {task.assignedTo.name.charAt(0)}
+                                </span>
+                              </div>
+                              <span>{task.assignedTo.name}</span>
+                            </div>
+                          )}
+                          {task.deadline && (
+                            <p className="text-xs text-gray-500 flex items-center gap-1">
+                              <span>📅</span>
+                              <span>{new Date(task.deadline).toLocaleDateString()}</span>
+                            </p>
+                          )}
+                        </div>
+                        <div className="flex gap-2 flex-wrap">
                           {status !== 'todo' && (
                             <button
                               onClick={() => updateTaskStatus(task._id, 'todo')}
-                              className="text-xs px-2 py-1 bg-gray-200 text-gray-800 rounded hover:bg-gray-300"
+                              className="text-xs px-3 py-1.5 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300 transition-colors"
                             >
                               To Do
                             </button>
@@ -258,7 +368,7 @@ export default function Home() {
                           {status !== 'in-progress' && (
                             <button
                               onClick={() => updateTaskStatus(task._id, 'in-progress')}
-                              className="text-xs px-2 py-1 bg-yellow-200 text-gray-800 rounded hover:bg-yellow-300"
+                              className="text-xs px-3 py-1.5 bg-yellow-200 text-yellow-900 rounded-md hover:bg-yellow-300 transition-colors"
                             >
                               In Progress
                             </button>
@@ -266,7 +376,7 @@ export default function Home() {
                           {status !== 'completed' && (
                             <button
                               onClick={() => updateTaskStatus(task._id, 'completed')}
-                              className="text-xs px-2 py-1 bg-green-200 text-gray-800 rounded hover:bg-green-300"
+                              className="text-xs px-3 py-1.5 bg-green-200 text-green-900 rounded-md hover:bg-green-300 transition-colors"
                             >
                               Complete
                             </button>

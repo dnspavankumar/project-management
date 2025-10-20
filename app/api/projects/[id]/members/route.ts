@@ -13,16 +13,32 @@ export async function POST(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    jwt.verify(token, process.env.JWT_SECRET!);
+    const decoded = jwt.verify(token, process.env.JWT_SECRET!) as { userId: string };
 
     const { userId } = await req.json();
 
     await dbConnect();
 
+    const User = (await import('@/models/User')).default;
     const project = await Project.findById(params.id);
 
     if (!project) {
       return NextResponse.json({ error: 'Project not found' }, { status: 404 });
+    }
+
+    // Verify the user being added is from the same company
+    const userToAdd = await User.findById(userId);
+    const currentUser = await User.findById(decoded.userId);
+
+    if (!userToAdd || !currentUser) {
+      return NextResponse.json({ error: 'User not found' }, { status: 404 });
+    }
+
+    if (userToAdd.company.toString() !== currentUser.company.toString()) {
+      return NextResponse.json(
+        { error: 'Cannot add users from different companies' },
+        { status: 403 }
+      );
     }
 
     if (!project.members.includes(userId)) {
